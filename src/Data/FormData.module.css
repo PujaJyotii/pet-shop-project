@@ -1,0 +1,124 @@
+.box {
+  margin: 20px auto;
+  max-width: 40%;
+  padding: 10px;
+  margin-top: 150px;
+  border: 3px solid orange;
+  color: brown;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+.box h3 {
+  text-align: center;
+  color: yellow;
+}
+
+.box form label {
+  display: block;
+  width: 100%;
+  margin: 2px;
+  padding: 2px;
+}
+
+.box form input {
+  display: block;
+  width: 100%;
+  margin: 2px;
+  padding: 3px;
+  border-radius: 5px;
+  border: 2px solid orange;
+  background-color: rgb(243, 243, 159);
+}
+
+.box form button {
+  border: 3px solid saddlebrown;
+  background-color: salmon;
+  border-radius: 5px;
+  padding: 4px;
+  margin: 4px;
+  cursor: pointer;
+}
+
+.box form button:hover {
+  background-color: orangered;
+}
+
+.list {
+  margin: 20px auto;
+  max-width: 40%;
+  padding: 10px;
+  border: 3px solid orange;
+  color: brown;
+  font-weight: bold;
+  opacity: 0.95;
+  z-index: 1;
+}
+
+.list ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.list li {
+  border: 2px solid yellow;
+  padding: 5px;
+  margin: 3px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 5px;
+}
+
+.box1 {
+  display: flex;
+  flex-direction: column;
+  margin: 2px;
+}
+
+.innerBox1 {
+  display: flex;
+  flex-direction: column;
+  margin: 2px;
+  color: yellow;
+  font-family: cursive;
+  font-weight: bolder;
+}
+.name .price .quantity {
+  margin: 2px;
+}
+.innerBox2 {
+  display: flex;
+  flex-direction: row;
+  margin: 2px;
+}
+
+.innerBox2 button {
+  border: 3px solid saddlebrown;
+  background-color: salmon;
+  border-radius: 5px;
+  padding: 4px;
+  margin: 4px;
+  cursor: pointer;
+}
+
+.innerBox2 button:hover {
+  background-color: orangered;
+}
+
+.btn {
+  border: 3px solid rgb(209, 17, 58);
+  background-color: yellow;
+  border-radius: 5px;
+  padding: 4px;
+  margin: 4px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: orangered;
+}

@@ -1,0 +1,94 @@
+.cart {
+  margin: 20px auto;
+  max-width: 60%;
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  border: 3px solid orange;
+  opacity: 0.65;
+}
+
+.cart h4 {
+  text-align: center;
+  color: yellow;
+  margin: 0;
+  padding: 0;
+}
+
+.cart ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border-bottom: 2px solid brown;
+}
+
+.values {
+  border: 2px solid brown;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 3px;
+  padding: 3px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  margin: 1px;
+}
+
+.btn {
+  display: flex;
+  flex-direction: row;
+  margin: 1px;
+  cursor: pointer;
+}
+.btn1 {
+  border: 2px solid brown;
+  padding: 2px;
+  border-radius: 3px;
+}
+
+.btn2 {
+  border: 2px solid brown;
+  padding: 2px;
+  border-radius: 3px;
+}
+
+.totalA {
+  text-align: end;
+  margin: 2px;
+  font-weight: bolder;
+  border-bottom: 2px solid brown;
+}
+
+.bttn {
+  text-align: end;
+  margin: 2px;
+}
+
+.purchase {
+  border: 2px solid yellow;
+  background-color: rgb(126, 36, 4);
+  color: white;
+  padding: 4px;
+  margin: 3px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.close {
+  border: 2px solid yellow;
+  background-color: rgb(126, 36, 4);
+  color: white;
+  padding: 4px;
+  margin: 3px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.purchase:hover .close:hover {
+  background-color: orange;
+  border: saddlebrown;
+}
