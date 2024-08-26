@@ -6,15 +6,102 @@ import { listAction } from "../Redux/FormSlice";
 
 function Cart(props) {
   const CartList = useSelector((state) => state.Cart.cart);
+  let FormList = useSelector((state) => state.List.list);
   const dispatch = useDispatch();
-  const IncreaseHandler = (el) => {
-    dispatch(cartAction.increase(el));
-    dispatch(listAction.quantityReduce(el));
+  const IncreaseHandler = async (el) => {
+    let index = CartList.findIndex((item) => item.nameV === el.nameV);
+    let Index = FormList.findIndex((item) => item.nameV === el.nameV);
+    try {
+      let obj = {
+        ...CartList[index],
+        amount: CartList[index].amount + 1,
+      };
+      let resp = await fetch(
+        `https://petshop-10b84-default-rtdb.firebaseio.com/cart/${CartList[index].id}.json`,
+        {
+          method: "PUT",
+          body: JSON.stringify(obj),
+          secureToken: { "Content-type": "application/json" },
+        }
+      );
+      if (!resp.ok) {
+        throw new Error("Quantity Cart Increase Error");
+      }
+      let data = await resp.json();
+      console.log(data);
+      dispatch(cartAction.increase(el));
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      let obj = {
+        ...FormList[Index],
+        quantity: FormList[Index].quantity - 1,
+      };
+      let resp = await fetch(
+        `https://petshop-10b84-default-rtdb.firebaseio.com/data/${FormList[Index].id}.json`,
+        {
+          method: "PUT",
+          body: JSON.stringify(obj),
+          secureToken: { "Content-type": "application/json" },
+        }
+      );
+      if (!resp.ok) {
+        throw new Error("List DecreaseError");
+      }
+      let data = await resp.json();
+      console.log(data);
+      dispatch(listAction.quantityReduce(el));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const DecreaseHandler = (el) => {
-    dispatch(cartAction.decrease(el));
-    dispatch(listAction.quantityIncrease(el));
+  const DecreaseHandler = async (el) => {
+    let index = CartList.findIndex((item) => item.nameV === el.nameV);
+    let Index = FormList.findIndex((item) => item.nameV === el.nameV);
+
+    try {
+      let obj = { ...CartList[index], amount: CartList[index].amount - 1 };
+
+      let resp = await fetch(
+        `https://petshop-10b84-default-rtdb.firebaseio.com/cart/${CartList[index].id}.json`,
+        {
+          method: "PUT",
+          body: JSON.stringify(obj),
+          secureToken: { "Content-Type": "application/json" },
+        }
+      );
+      if (!resp.ok) {
+        throw new Error("Decrease Quantity in Cart");
+      }
+      let data = await resp.json();
+      console.log(data);
+      dispatch(cartAction.decrease(el));
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      let obj = { ...FormList[Index], quantity: FormList[Index].quantity + 1 };
+      let resp = await fetch(
+        `https://petshop-10b84-default-rtdb.firebaseio.com/data/${FormList[Index].id}.json`,
+        {
+          method: "PUT",
+          body: JSON.stringify(obj),
+          secureToken: { "Content-Type": "application/json" },
+        }
+      );
+      if (!resp.ok) {
+        throw new Error(resp.status);
+      }
+      let data = await resp.json();
+      console.log(data);
+      dispatch(listAction.quantityIncrease(el));
+    } catch (error) {
+      console.log(error);
+    }
   };
   let totalAmount = CartList.reduce((total, el) => {
     return total + el.price * el.amount;

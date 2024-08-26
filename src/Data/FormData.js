@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "../UI/Card";
 import classes from "./FormData.module.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,9 +10,10 @@ function FormData() {
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const FormList = useSelector((state) => state.List.list);
+  const Cart = useSelector((state) => state.Cart.cart);
 
   const dispatch = useDispatch();
-  const SubmitHandler = (e) => {
+  const SubmitHandler = async (e) => {
     e.preventDefault();
     if (nameV.length === 0 || +price <= 0 || +quantity <= 0) {
       return;
@@ -22,24 +23,89 @@ function FormData() {
       price: price,
       quantity: quantity,
     };
-    dispatch(listAction.set(obj));
+    try {
+      let resp = await fetch(
+        "https://petshop-10b84-default-rtdb.firebaseio.com/data.json",
+        {
+          method: "POST",
+          body: JSON.stringify(obj),
+          secureToken: { "Content-Type": "application/json" },
+        }
+      );
+      if (!resp.ok) {
+        throw new Error("Post Error");
+      }
+      let data = await resp.json();
+      dispatch(listAction.set({ ...obj, id: data.name }));
+    } catch (error) {
+      console.log(error);
+    }
+
     setNameV("");
     setPrice("");
     setQuantity("");
   };
+  useEffect(() => {
+    async function getData() {
+      let resp = await fetch(
+        "https://petshop-10b84-default-rtdb.firebaseio.com/data.json"
+      );
+      let data = await resp.json();
+      let res = [];
+      for (let key in data) {
+        res.push({
+          ...data[key],
+          id: key,
+        });
+      }
+      dispatch(listAction.get(res));
+    }
+    getData();
+  }, [dispatch]);
 
-  const EditHandler = (item) => {
+  const EditHandler = async (item) => {
     setNameV(item.nameV);
     setPrice(item.price);
     setQuantity(item.quantity);
-    dispatch(listAction.remove(item));
+    let index = FormList.findIndex((items) => items.nameV === item.nameV);
+    try {
+      let resp = await fetch(
+        `https://petshop-10b84-default-rtdb.firebaseio.com/data/${FormList[index].id}.json`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!resp.ok) {
+        throw new Error("Delete Error");
+      }
+      dispatch(listAction.remove(item));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const DeleteHandler = (item) => {
-    dispatch(listAction.remove(item));
+  const DeleteHandler = async (item) => {
+    let index = FormList.findIndex((items) => items.nameV === item.nameV);
+    try {
+      let resp = await fetch(
+        `https://petshop-10b84-default-rtdb.firebaseio.com/data/${FormList[index].id}.json`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!resp.ok) {
+        throw new Error("Delete Error");
+      }
+      dispatch(listAction.remove(item));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const UpdateHandler = (item) => {
+  const UpdateHandler = async (item) => {
+    let index = FormList.findIndex((items) => items.nameV === item.nameV);
     if (nameV.length === 0 || +price <= 0 || +quantity <= 0) {
       return;
     }
@@ -48,12 +114,116 @@ function FormData() {
       price: price,
       quantity: quantity,
     };
-    dispatch(listAction.update({ obj, item }));
+    try {
+      let resp = await fetch(
+        `https://petshop-10b84-default-rtdb.firebaseio.com/data/${FormList[index].id}.json`,
+        {
+          method: "PUT",
+          body: JSON.stringify(obj),
+          secureToken: { "Content-type": "application/json" },
+        }
+      );
+      if (!resp.okay) {
+        throw new Error("Put Error");
+      }
+      let data = await resp.json();
+      console.log(data);
+      dispatch(listAction.update({ obj, item }));
+    } catch (error) {
+      console.log(error);
+    }
+    setNameV("");
+    setPrice("");
+    setQuantity("");
   };
 
-  const AddHandler = (item) => {
-    dispatch(cartAction.add({ ...item, amount: 1 }));
-    dispatch(listAction.quantityReduce(item));
+  useEffect(() => {
+    async function getData() {
+      let resp = await fetch(
+        "https://petshop-10b84-default-rtdb.firebaseio.com/cart.json"
+      );
+      let data = await resp.json();
+      let res = [];
+      for (let key in data) {
+        res.push({
+          ...data[key],
+          id: key,
+        });
+      }
+      dispatch(cartAction.get(res));
+    }
+    getData();
+  }, [dispatch]);
+
+  const AddHandler = async (item) => {
+    let index = Cart.findIndex((items) => items.nameV === item.nameV);
+    let Index = FormList.findIndex((items) => items.nameV === item.nameV);
+    if (index === -1) {
+      let obj = { ...item, amount: 1 };
+      try {
+        let resp = await fetch(
+          "https://petshop-10b84-default-rtdb.firebaseio.com/cart.json",
+          {
+            method: "POST",
+            body: JSON.stringify(obj),
+            secureToken: { "Content-Type": "application/json" },
+          }
+        );
+        if (!resp.ok) {
+          throw new Error("Post Cart Error");
+        }
+        let data = await resp.json();
+        dispatch(cartAction.add({ ...item, amount: 1, id: data.name }));
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        let obj = {
+          ...Cart[index],
+          amount: Cart[index].amount + 1,
+        };
+        let resp = await fetch(
+          `https://petshop-10b84-default-rtdb.firebaseio.com/cart/${Cart[index].id}.json`,
+          {
+            method: "PUT",
+            body: JSON.stringify(obj),
+            secureToken: { "Content-Type": "application/json" },
+          }
+        );
+        if (!resp.ok) {
+          throw new Error("Post Cart Error");
+        }
+        let data = await resp.json();
+        console.log(data);
+        dispatch(cartAction.add(item));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    try {
+      let obj = {
+        ...FormList[Index],
+        quantity: FormList[Index].quantity - 1,
+      };
+      let resp = await fetch(
+        `https://petshop-10b84-default-rtdb.firebaseio.com/data/${FormList[Index].id}.json`,
+        {
+          method: "PUT",
+          body: JSON.stringify(obj),
+          secureToken: { "Content-Type": "application/json" },
+        }
+      );
+      if (!resp.ok) {
+        throw new Error("Post Cart Error");
+      }
+      let data = await resp.json();
+      console.log(data);
+      dispatch(listAction.quantityReduce(item));
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <>
